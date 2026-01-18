@@ -99,5 +99,4 @@ mono <group> <index> <value>
 MIT / Apache-2.0 / GPL-3.0
 
 
-Each display line (top / bottom) consists of:
 
