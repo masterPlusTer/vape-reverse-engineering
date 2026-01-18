@@ -5,8 +5,13 @@ static const uint8_t I2C_ADDR = 0x3C;
 static const uint8_t PIN_SDA = A4;
 static const uint8_t PIN_SCL = A5;
 
-// Con pull-ups reales ya podemos ir más rápido
-static const uint8_t I2C_DELAY_US = 15;   // ~70–80 kHz aprox
+// Un poco más tolerante
+static const uint8_t I2C_DELAY_US = 20;
+
+// ----- Serial robustness -----
+static const uint32_t SERIAL_BAUD = 115200;
+static const uint16_t CMD_MAX_LEN = 96;
+static const uint16_t CMD_IDLE_TIMEOUT_MS = 250;
 
 // ---------- Open drain ----------
 static inline void sdaLow()  { pinMode(PIN_SDA, OUTPUT); digitalWrite(PIN_SDA, LOW); }
@@ -38,7 +43,6 @@ bool i2cWriteByte(uint8_t b) {
     b <<= 1;
   }
 
-  // ACK
   sdaHigh(); i2cDelay();
   sclHigh(); i2cDelay();
   bool ack = (readSDA() == LOW);
@@ -87,15 +91,50 @@ bool sendAll(const uint8_t *pkt) {
          i2cWriteTx(pkt, 145);
 }
 
-// ===== Serial =====
+// ===== APAGADO TOTAL =====
+void allOff() {
+  memset(pktB, 0x00, sizeof(pktB));
+  sendAll(pktB);
+  Serial.println("ALL OFF");
+}
+
+// ===== Serial robusto =====
 String readLine() {
   static String s;
+  static uint32_t lastCharMs = 0;
+
   while (Serial.available()) {
-    char c = Serial.read();
-    if (c == '\r') continue;
-    if (c == '\n') { String o = s; s = ""; return o; }
-    s += c;
+    char c = (char)Serial.read();
+    lastCharMs = millis();
+
+    if (c == '\0') continue;
+
+    if (c == '\r' || c == '\n') {
+      if (s.length() == 0) continue;
+      String o = s;
+      s = "";
+      return o;
+    }
+
+    if (c == '\b' || c == 127) {
+      if (s.length() > 0) s.remove(s.length() - 1);
+      continue;
+    }
+
+    if (s.length() < CMD_MAX_LEN) {
+      s += c;
+    } else {
+      s = "";
+      Serial.println("ERR: comando muy largo");
+    }
   }
+
+  if (s.length() > 0 && (millis() - lastCharMs) > CMD_IDLE_TIMEOUT_MS) {
+    String o = s;
+    s = "";
+    return o;
+  }
+
   return "";
 }
 
@@ -103,18 +142,28 @@ bool blink = false;
 uint32_t lastBlink = 0;
 bool state = false;
 
+void printHelp() {
+  Serial.println("Comandos:");
+  Serial.println("  a | b");
+  Serial.println("  blink on | blink off");
+  Serial.println("  set i v");
+  Serial.println("  halo v");
+  Serial.println("  off        (apaga todos los LEDs)");
+}
+
 void setup() {
-  Serial.begin(115200);
-  delay(200);
+  Serial.begin(SERIAL_BAUD);
+  delay(800);
+
+  Serial.println();
+  Serial.println("BOOT");
 
   sdaHigh();
   sclHigh();
 
   memcpy(pktB, pktA, sizeof(pktA));
 
-  Serial.println("I2C estable listo.");
-  Serial.println("Comandos: a | b | blink on/off | set i v | halo v");
-
+  printHelp();
   sendAll(pktA);
 }
 
@@ -129,31 +178,56 @@ void loop() {
   if (!l.length()) return;
   l.trim();
 
-  if (l == "a") {
+  if (l == "help" || l == "?") {
+    printHelp();
+
+  } else if (l == "a") {
     sendAll(pktA);
     Serial.println("A");
+
   } else if (l == "b") {
     sendAll(pktB);
     Serial.println("B");
+
   } else if (l == "blink on") {
     blink = true;
+    Serial.println("blink ON");
+
   } else if (l == "blink off") {
     blink = false;
+    Serial.println("blink OFF");
+
+  } else if (l == "off") {
+    allOff();
+
   } else if (l.startsWith("set ")) {
     int i, v;
-    sscanf(l.c_str(), "set %d %d", &i, &v);
-    if (i >= 0 && i < 145) {
-      pktB[i] = constrain(v, 0, 255);
-      sendAll(pktB);
-      Serial.print("pktB["); Serial.print(i); Serial.println("]");
+    if (sscanf(l.c_str(), "set %d %d", &i, &v) == 2) {
+      if (i >= 0 && i < 145) {
+        pktB[i] = constrain(v, 0, 255);
+        sendAll(pktB);
+        Serial.print("pktB["); Serial.print(i); Serial.println("]");
+      } else {
+        Serial.println("ERR: i fuera de rango");
+      }
+    } else {
+      Serial.println("ERR: uso: set i v");
     }
+
   } else if (l.startsWith("halo ")) {
     int v;
-    sscanf(l.c_str(), "halo %d", &v);
-    for (int i = 35; i < 110; i++) pktB[i] = constrain(v, 0, 255);
-    sendAll(pktB);
-    Serial.println("halo");
+    if (sscanf(l.c_str(), "halo %d", &v) == 1) {
+      uint8_t vv = constrain(v, 0, 255);
+      for (int i = 35; i < 110; i++) pktB[i] = vv;
+      sendAll(pktB);
+      Serial.println("halo");
+    } else {
+      Serial.println("ERR: uso: halo v");
+    }
+
+  } else {
+    Serial.print("ERR: comando desconocido: ");
+    Serial.println(l);
   }
 }
-
 
