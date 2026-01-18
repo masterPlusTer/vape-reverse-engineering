@@ -36,9 +36,10 @@ This project abstracts a captured I2C display protocol into high-level commands 
   - SDA → A4
   - SCL → A5
  
-IMPORTANT! disconnect the battery before to make the connections with the arduino
-this is because if both are connected sometimes the code dont work properly
-If the battery is needed connect it AFTER uploading the code, once you can see the display working
+IMPORTANT! disconnect the battery before to make the connections with the arduino,
+this is because if both are connected sometimes display dont inicialize,
+If more power is needed then connect the battery AFTER uploading the code and when you can see the display working.
+
 ![IMG_309E37B4-B62F-4F48-A170-8914BD57300F](https://github.com/user-attachments/assets/d95aeae9-361a-4300-a516-2634ef227caf)
 
   
