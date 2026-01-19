@@ -1,0 +1,8 @@
+App(
+    appid="vape_display",
+    name="Vape Display",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="vape_display_app",
+    stack_size=4096,
+    icon="A_Plugins_14",
+)
