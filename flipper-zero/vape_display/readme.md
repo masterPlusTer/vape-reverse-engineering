@@ -7,7 +7,8 @@ The display is **not compatible with standard I2C drivers**.
 It requires **precise timing and a specific packet sequence**, discovered through logic analyzer captures.  
 For this reason, the implementation uses **software (bit-banged) I2C** with Arduino-like timing.
 
----
+https://github.com/user-attachments/assets/ba6cd49b-4f13-426a-8d67-b7f93d9c625f
+
 
 ## ⚠️ Important Notes
 
