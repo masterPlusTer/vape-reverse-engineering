@@ -1,10 +1,10 @@
 # Vape Display Replay (Arduino Nano)
 
 
-
 Arduino Nano library to control a custom segmented display via **I2C replay**, using a **serial command interface** and a **mapped logical layout** (digits, indicators, icons, bars, RGB ring).
 
 This project abstracts a captured I2C display protocol into high-level commands such as `line`, `digit`, `rgbfill`, and `monofill`, making the display easy to drive, script, and extend.
+
 ![IMG_3186](https://github.com/user-attachments/assets/523ab45a-bc0d-4a10-b0af-01bbbc1e89cf)
 ![IMG_3185](https://github.com/user-attachments/assets/0c26b9e5-5bbe-4da3-872d-dea00d1ac4c0)
 ![IMG_3183](https://github.com/user-attachments/assets/50756790-e48d-4c3c-8c08-71427dac80f5)
@@ -113,4 +113,5 @@ mono <group> <index> <value>
 MIT / Apache-2.0 / GPL-3.0
 
 
+![map](https://github.com/user-attachments/assets/d60e7f1c-bd6c-4b2c-bcda-44b3807586dd)
 
