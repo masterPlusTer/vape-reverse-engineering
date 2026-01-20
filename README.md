@@ -1,4 +1,4 @@
-# Vape Display Replay (Arduino Nano)
+#STLTH GEEK BAR Vape Display Replay (Arduino Nano)
 
 
 Arduino Nano library to control a custom segmented display via **I2C replay**, using a **serial command interface** and a **mapped logical layout** (digits, indicators, icons, bars, RGB ring).
