@@ -6,7 +6,6 @@ Arduino Nano library to control a custom segmented display via **I2C replay**, u
 This project abstracts a captured I2C display protocol into high-level commands such as `line`, `digit`, `rgbfill`, and `monofill`, making the display easy to drive, script, and extend.
 
 ![IMG_3186](https://github.com/user-attachments/assets/523ab45a-bc0d-4a10-b0af-01bbbc1e89cf)
-![IMG_3183](https://github.com/user-attachments/assets/50756790-e48d-4c3c-8c08-71427dac80f5)
 ![IMG_315DF290-99AE-4660-8C72-7250E5E3D94E](https://github.com/user-attachments/assets/7581c8d4-195e-42ac-913e-f7f869f34122)
 
 ---
