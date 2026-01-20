@@ -1,5 +1,5 @@
 
-# Flipper Zero – Vape Display Driver (I2C Bit-Bang)
+# Flipper Zero – STLTH GEEK BAR Vape Display Driver (I2C Bit-Bang)
 
 This project allows a **Flipper Zero** to control a vape device display over **I2C**, using the **external GPIO pins (C0/C1)**.
 
